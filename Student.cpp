@@ -1,18 +1,9 @@
-/*
-    Student.cpp
-    -----------
-    Module Owner: Member 1
-    Implements Student.h
-*/
-
 #include "Student.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 using namespace std;
 
-// Small local helper to split a string by a delimiter character.
-// Used only for file storage (serializing/deserializing academic history).
 static vector<string> splitLocal(const string& text, char delimiter) {
     vector<string> tokens;
     stringstream ss(text);
@@ -22,8 +13,6 @@ static vector<string> splitLocal(const string& text, char delimiter) {
     }
     return tokens;
 }
-
-// ---------------- Constructors ----------------
 
 Student::Student() {
     studentID = "";
@@ -56,8 +45,6 @@ Student::Student(string id, string name, string gender, string dob, string fathe
     this->attendancePercentage = attendance;
 }
 
-// ---------------- Getters ----------------
-
 string Student::getStudentID() const { return studentID; }
 string Student::getFullName() const { return fullName; }
 string Student::getGender() const { return gender; }
@@ -72,8 +59,6 @@ string Student::getEmail() const { return email; }
 double Student::getAttendance() const { return attendancePercentage; }
 vector<SemesterRecord>& Student::getAcademicHistory() { return academicHistory; }
 
-// ---------------- Setters ----------------
-
 void Student::setStudentID(string id) { studentID = id; }
 void Student::setFullName(string name) { fullName = name; }
 void Student::setGender(string g) { gender = g; }
@@ -87,14 +72,10 @@ void Student::setPhoneNumber(string p) { phoneNumber = p; }
 void Student::setEmail(string e) { email = e; }
 void Student::setAttendance(double a) { attendancePercentage = a; }
 
-// ---------------- Academic Record ----------------
-
 void Student::addSemesterRecord(const SemesterRecord& record) {
-    academicHistory.push_back(record);   // vector push_back -> amortized O(1)
+    academicHistory.push_back(record);
 }
 
-// Time Complexity: O(n), where n = number of semesters recorded so far.
-// We simply average the GPA of every stored semester.
 double Student::calculateCGPA() const {
     if (academicHistory.empty()) return 0.0;
 
@@ -104,8 +85,6 @@ double Student::calculateCGPA() const {
     }
     return total / academicHistory.size();
 }
-
-// ---------------- Display ----------------
 
 void Student::displayShort() const {
     cout << left << setw(10) << studentID
@@ -148,14 +127,6 @@ void Student::displayDetailed() const {
     cout << "----------------------------------------\n";
 }
 
-// ---------------- File Handling ----------------
-// A student is stored as ONE line of text using '|' to separate main fields.
-// The last field holds the academic history, where each semester record is
-// separated by ';' and the four values inside a record are separated by ','.
-//
-// Example line:
-// ST0001|Rahul Kumar|Male|12-05-2004|Suresh Kumar|Anita Kumar|CSE|B.Tech|5|9876543210|rahul@example.com|92.50|1,8.20,80.50,A;2,8.45,82.00,A
-
 string Student::toFileString() const {
     stringstream ss;
     ss << studentID << "|" << fullName << "|" << gender << "|" << dob << "|"
@@ -176,7 +147,6 @@ Student Student::fromFileString(const string& line) {
     vector<string> fields = splitLocal(line, '|');
     Student s;
 
-    // Guard against malformed/blank lines
     if (fields.size() < 12) return s;
 
     s.setStudentID(fields[0]);
@@ -192,7 +162,6 @@ Student Student::fromFileString(const string& line) {
     s.setEmail(fields[10]);
     s.setAttendance(stod(fields[11]));
 
-    // Field 12 (if present) holds the semester history
     if (fields.size() >= 13 && !fields[12].empty()) {
         vector<string> semesterEntries = splitLocal(fields[12], ';');
         for (size_t i = 0; i < semesterEntries.size(); i++) {

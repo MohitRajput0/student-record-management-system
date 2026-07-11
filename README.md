@@ -1,6 +1,6 @@
 STUDENT RECORD MANAGEMENT SYSTEM
 =================================
-DSA Course Project | Team of 5 | B.Tech CSE, 5th Semester
+DSA Course Project | B.Tech CSE
 
 HOW TO COMPILE
 --------------

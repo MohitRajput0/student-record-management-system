@@ -1,15 +1,3 @@
-/*
-    Student.h
-    ---------
-    Module Owner: Member 1
-
-    This file defines the Student class, which is the core data unit of the
-    Student Record Management System. It demonstrates:
-        - Object-Oriented Programming (class with private data + public interface)
-        - Encapsulation (private attributes accessed via getters/setters)
-        - Use of vector to store semester-wise academic history
-*/
-
 #ifndef STUDENT_H
 #define STUDENT_H
 
@@ -17,9 +5,6 @@
 #include <vector>
 using namespace std;
 
-// A simple structure to hold one semester's academic performance.
-// Kept separate from Student so that academic history can grow
-// dynamically each semester without changing the Student class.
 struct SemesterRecord {
     int semesterNumber;
     double gpa;
@@ -29,10 +14,10 @@ struct SemesterRecord {
 
 class Student {
 private:
-    string studentID;              // Auto-generated, e.g. ST0001
+    string studentID;
     string fullName;
     string gender;
-    string dob;                    // Date of Birth, format: DD-MM-YYYY
+    string dob;
     string fatherName;
     string motherName;
     string department;
@@ -42,15 +27,13 @@ private:
     string email;
     double attendancePercentage;
 
-    vector<SemesterRecord> academicHistory;   // vector: dynamic semester-wise records
+    vector<SemesterRecord> academicHistory;
 
 public:
-    // Constructors
     Student();
     Student(string id, string name, string gender, string dob, string father, string mother,
             string dept, string course, int sem, string phone, string email, double attendance);
 
-    // ---------- Getters ----------
     string getStudentID() const;
     string getFullName() const;
     string getGender() const;
@@ -63,9 +46,8 @@ public:
     string getPhoneNumber() const;
     string getEmail() const;
     double getAttendance() const;
-    vector<SemesterRecord>& getAcademicHistory();   // returned by reference so history can be edited
+    vector<SemesterRecord>& getAcademicHistory();
 
-    // ---------- Setters (used by Update Module) ----------
     void setStudentID(string id);
     void setFullName(string name);
     void setGender(string g);
@@ -79,18 +61,13 @@ public:
     void setEmail(string e);
     void setAttendance(double a);
 
-    // ---------- Academic Record handling ----------
     void addSemesterRecord(const SemesterRecord& record);
-    double calculateCGPA() const;   // O(n) where n = number of semesters recorded
+    double calculateCGPA() const;
 
-    // ---------- Display ----------
-    void displayShort() const;      // one-line summary, used in "Display All"
-    void displayDetailed() const;   // full record with academic history, used in "Search"
+    void displayShort() const;
+    void displayDetailed() const;
 
-    // ---------- File Handling helpers ----------
-    // Converts a Student object into a single line of text for storage.
     string toFileString() const;
-    // Rebuilds a Student object from a single stored line of text.
     static Student fromFileString(const string& line);
 };
 

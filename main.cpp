@@ -1,16 +1,3 @@
-/*
-    main.cpp
-    --------
-    Module Owner: Member 5 (Menu Integration)
-
-    Entry point of the Student Record Management System.
-    Ties together Authentication, StudentManager, and the console menu.
-
-    Project    : Student Record Management System
-    Course     : Data Structures and Algorithms (DSA)
-    Team Size  : 5 members
-*/
-
 #include <iostream>
 #include "Authentication.h"
 #include "StudentManager.h"
@@ -51,7 +38,6 @@ int main() {
     bool programRunning = true;
 
     while (programRunning) {
-        // Require login before any operation can be performed
         if (!auth.login()) {
             cout << "\nTry again? (y/n): ";
             char retry;
@@ -62,7 +48,7 @@ int main() {
             continue;
         }
 
-        manager.loadRecords();   // automatically load records after login
+        manager.loadRecords();
 
         bool sessionActive = true;
         while (sessionActive) {
@@ -105,7 +91,7 @@ int main() {
                     break;
                 case 9:
                     auth.logout();
-                    sessionActive = false;   // return to login screen
+                    sessionActive = false;
                     break;
                 case 0:
                     manager.saveRecords();

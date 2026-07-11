@@ -1,10 +1,3 @@
-/*
-    FileManager.cpp
-    ----------------
-    Module Owner: Member 5
-    Implements FileManager.h
-*/
-
 #include "FileManager.h"
 #include <fstream>
 #include <iostream>
@@ -13,7 +6,6 @@ using namespace std;
 void FileManager::loadStudents(vector<Student>& students, const string& filename) {
     ifstream file(filename);
     if (!file) {
-        // No file yet -> this is normal on the very first run.
         return;
     }
 
@@ -30,7 +22,7 @@ void FileManager::loadStudents(vector<Student>& students, const string& filename
 }
 
 void FileManager::saveStudents(const vector<Student>& students, const string& filename) {
-    ofstream file(filename, ios::trunc);   // overwrite with the latest in-memory data
+    ofstream file(filename, ios::trunc);
     if (!file) {
         cout << "Error: Unable to open " << filename << " for saving.\n";
         return;

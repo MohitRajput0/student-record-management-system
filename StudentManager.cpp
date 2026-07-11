@@ -1,9 +1,3 @@
-/*
-    StudentManager.cpp
-    -------------------
-    Implements StudentManager.h
-*/
-
 #include "StudentManager.h"
 #include "FileManager.h"
 #include <iostream>
@@ -16,15 +10,11 @@ StudentManager::StudentManager(string filename) {
     nextIDNumber = 1;
 }
 
-// ---------------- File Handling ----------------
-
 void StudentManager::loadRecords() {
     FileManager::loadStudents(students, dataFile);
 
-    // Recalculate nextIDNumber based on the highest existing ID,
-    // so new students continue the sequence correctly after reload.
     for (size_t i = 0; i < students.size(); i++) {
-        string id = students[i].getStudentID();      // format: ST0001
+        string id = students[i].getStudentID();
         if (id.size() > 2) {
             int num = stoi(id.substr(2));
             if (num >= nextIDNumber) nextIDNumber = num + 1;
@@ -38,17 +28,12 @@ void StudentManager::saveRecords() {
     cout << "[Info] Records saved to " << dataFile << ".\n";
 }
 
-// Generates IDs like ST0001, ST0002, ... using zero-padding so that
-// alphabetical sorting of IDs also matches numerical order (this is
-// what allows Binary Search to work correctly after sorting by ID).
 string StudentManager::generateNextID() {
     stringstream ss;
     ss << "ST" << setfill('0') << setw(4) << nextIDNumber;
     nextIDNumber++;
     return ss.str();
 }
-
-// ---------------- Add Student (Member 1) ----------------
 
 void StudentManager::addStudent() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -74,7 +59,6 @@ void StudentManager::addStudent() {
     string newID = generateNextID();
     Student newStudent(newID, name, gender, dob, father, mother, dept, course, sem, phone, email, attendance);
 
-    // Ask whether to enter semester-wise GPA history now.
     cout << "\nDo you want to enter semester-wise GPA history now? (y/n): ";
     char choice;
     cin >> choice;
@@ -89,13 +73,11 @@ void StudentManager::addStudent() {
         }
     }
 
-    students.push_back(newStudent);   // vector push_back -> amortized O(1)
-    saveRecords();                    // save after every modification (as required)
+    students.push_back(newStudent);
+    saveRecords();
 
     cout << "\nStudent added successfully with ID: " << newID << endl;
 }
-
-// ---------------- Update Student (Member 3) ----------------
 
 void StudentManager::updateStudent() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -103,7 +85,6 @@ void StudentManager::updateStudent() {
     cout << "\nEnter Student ID to update: ";
     getline(cin, id);
 
-    // Linear search to locate the record. O(n)
     int index = -1;
     for (size_t i = 0; i < students.size(); i++) {
         if (students[i].getStudentID() == id) {
@@ -161,14 +142,11 @@ void StudentManager::updateStudent() {
     cout << "Student record updated successfully.\n";
 }
 
-// ---------------- Delete Student (Member 3) ----------------
-
 void StudentManager::deleteStudent() {
     string id;
     cout << "\nEnter Student ID to delete: ";
     cin >> id;
 
-    // Linear search to locate the record. O(n)
     int index = -1;
     for (size_t i = 0; i < students.size(); i++) {
         if (students[i].getStudentID() == id) {
@@ -186,19 +164,13 @@ void StudentManager::deleteStudent() {
     char confirm;
     cin >> confirm;
     if (confirm == 'y' || confirm == 'Y') {
-        students.erase(students.begin() + index);   // vector erase -> O(n) shift
+        students.erase(students.begin() + index);
         saveRecords();
         cout << "Student record deleted successfully.\n";
     } else {
         cout << "Deletion cancelled.\n";
     }
 }
-
-// ---------------- Search (Member 2) ----------------
-// All three searches below use LINEAR SEARCH: we check every element one
-// by one until a match is found. This works on unsorted data and is easy
-// to reason about, which is why it's used as the primary search method.
-// Time Complexity: O(n) | Space Complexity: O(1)
 
 void StudentManager::searchByID() {
     string id;
@@ -245,27 +217,12 @@ void StudentManager::searchByDOB() {
     if (!found) cout << "No student found with DOB " << dob << ".\n";
 }
 
-// ---------------- Binary Search (optional, Member 2) ----------------
-// Binary Search requires the data to be SORTED first, because at every
-// step it eliminates half the remaining elements by comparing the middle
-// element to the target -- this "jump to the middle" logic only gives a
-// correct answer if the data is arranged in order.
-//
-// Advantage over Linear Search: for large n, Binary Search is far faster
-// (O(log n) vs O(n)) because each comparison discards half of the
-// remaining records instead of checking them one at a time.
-//
-// Time Complexity: O(log n) for the search itself (plus O(n log n) once,
-// to sort the data beforehand using Merge Sort).
-// Space Complexity: O(1) (iterative version, no extra memory needed).
-
 void StudentManager::binarySearchByID() {
     if (students.empty()) {
         cout << "No records to search.\n";
         return;
     }
 
-    // Step 1: sort by ID first (Binary Search precondition)
     mergeSort(students, 0, students.size() - 1,
               [](const Student& a, const Student& b) { return a.getStudentID() < b.getStudentID(); });
 
@@ -290,8 +247,6 @@ void StudentManager::binarySearchByID() {
     cout << "No student found with ID " << id << ".\n";
 }
 
-// ---------------- Display All (Member 2) ----------------
-
 void StudentManager::displayAll() {
     if (students.empty()) {
         cout << "\nNo student records found.\n";
@@ -308,23 +263,8 @@ void StudentManager::displayAll() {
     cout << "\nTotal Students: " << students.size() << endl;
 }
 
-// ---------------- Sorting (Member 4) ----------------
-// MERGE SORT was chosen over other algorithms (like Bubble/Selection Sort)
-// because it guarantees O(n log n) performance even in the worst case,
-// which matters as the student database grows. It works by:
-//   1. Dividing the vector into two halves recursively until each part
-//      has only one element (which is trivially "sorted").
-//   2. Merging the sorted halves back together in the correct order.
-//
-// Time Complexity : O(n log n) in best, average, and worst case.
-// Space Complexity: O(n) extra space is used for the temporary arrays
-//                    created during the merge step.
-// It is also a STABLE sort, meaning records that compare equal keep
-// their original relative order -- useful when, for example, two
-// students share the same CGPA.
-
 void StudentManager::merge(vector<Student>& arr, int left, int mid, int right,
-                            const function<bool(const Student&, const Student&)>& comesBefore) {
+                           const function<bool(const Student&, const Student&)>& comesBefore) {
     vector<Student> leftPart(arr.begin() + left, arr.begin() + mid + 1);
     vector<Student> rightPart(arr.begin() + mid + 1, arr.begin() + right + 1);
 
@@ -332,10 +272,6 @@ void StudentManager::merge(vector<Student>& arr, int left, int mid, int right,
     int k = left;
 
     while (i < leftPart.size() && j < rightPart.size()) {
-        // "!comesBefore(rightPart[j], leftPart[i])" means leftPart[i] is NOT
-        // greater than rightPart[j], i.e. left <= right. Picking left in
-        // this case (instead of only on strict less-than) keeps the sort
-        // stable -- equal elements retain their original relative order.
         if (!comesBefore(rightPart[j], leftPart[i])) {
             arr[k++] = leftPart[i++];
         } else {
@@ -347,8 +283,8 @@ void StudentManager::merge(vector<Student>& arr, int left, int mid, int right,
 }
 
 void StudentManager::mergeSort(vector<Student>& arr, int left, int right,
-                                const function<bool(const Student&, const Student&)>& comesBefore) {
-    if (left >= right) return;   // base case: 0 or 1 element is already sorted
+                               const function<bool(const Student&, const Student&)>& comesBefore) {
+    if (left >= right) return;
 
     int mid = left + (right - left) / 2;
     mergeSort(arr, left, mid, comesBefore);
@@ -394,9 +330,6 @@ void StudentManager::sortMenu() {
     saveRecords();
     displayAll();
 }
-
-// ---------------- Dashboard (Member 4) ----------------
-// Time Complexity: O(n), one pass over the vector to compute the stats.
 
 void StudentManager::showDashboard() {
     if (students.empty()) {

@@ -1,10 +1,3 @@
-/*
-    Authentication.cpp
-    -------------------
-    Module Owner: Member 5
-    Implements Authentication.h
-*/
-
 #include "Authentication.h"
 #include <iostream>
 #include <fstream>
@@ -17,8 +10,6 @@ Authentication::Authentication(string filename) {
     createDefaultCredentialsIfMissing();
 }
 
-// If login.txt does not exist (first run), create it with a default
-// admin account so the application can be used immediately.
 void Authentication::createDefaultCredentialsIfMissing() {
     ifstream checkFile(filename);
     if (!checkFile) {
@@ -30,9 +21,6 @@ void Authentication::createDefaultCredentialsIfMissing() {
     checkFile.close();
 }
 
-// Reads username|password pairs from login.txt and checks them against
-// what the user types in. Time Complexity: O(n) where n = number of
-// stored credentials (in this project, typically just one admin account).
 bool Authentication::login() {
     string enteredUser, enteredPass;
 
